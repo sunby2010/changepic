@@ -37,6 +37,8 @@ public class MainFrame extends JFrame {
 	private boolean isSpin=false;
 	private FileMng filemng;
 	private String outPath;
+	private String picDir=null;
+	private String cvtDir="out";
 	public MainFrame(){
 		setTitle("ChangePicture");
 		Dimension dim=Toolkit.getDefaultToolkit().getScreenSize();
@@ -53,6 +55,20 @@ public class MainFrame extends JFrame {
 		contentPane.add(createToolsPanel(), BorderLayout.NORTH);
 		
 		setListener();
+	}
+	public void setPicDir(String buf){
+		System.out.println("baseDir:"+buf);
+		if(buf==null)
+			return;
+		if(new File(buf).exists()){
+			this.picDir=buf;
+		}
+	}
+	public void setCvtDir(String buf){
+		System.out.println("cvtDir:"+buf);
+		if(buf==null)
+			return;
+		cvtDir=buf;
 	}
 	private JPanel createToolsPanel(){
 		JPanel toolsPanel=new JPanel();
@@ -299,10 +315,12 @@ public class MainFrame extends JFrame {
 		JFileChooser chooser = new JFileChooser();
 		FileNameExtensionFilter ff = new FileNameExtensionFilter( null, "lst");
 		chooser.setFileFilter(ff);
+		if(this.picDir!=null)
+			chooser.setCurrentDirectory(new File(this.picDir));
 		int result=chooser.showOpenDialog(MainFrame.this);
 		if(result==JFileChooser.APPROVE_OPTION) {
 			String name = chooser.getSelectedFile().getPath();
-			outPath=chooser.getSelectedFile().getParent()+"/out";
+			outPath=chooser.getSelectedFile().getParent()+"/"+this.cvtDir;
 			System.out.println(outPath);
 			filemng=new FileMng(name);
 			if(filemng.size()>0){
@@ -426,7 +444,7 @@ public class MainFrame extends JFrame {
 		return x;
 	}
 	private String genOutDir(String path){
-		String out=path+"/out";
+		String out=path+"/"+this.cvtDir;
 		File f = new File(out);
 		if(!f.exists()){
 			f.mkdir();
